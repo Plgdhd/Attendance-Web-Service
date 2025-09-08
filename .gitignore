@@ -1,0 +1,12 @@
+*
+!.gitignore
+!README.md
+!pom.xml
+!src/
+!src/main/
+!src/main/**
+
+src/main/**/*.properties
+src/main/resources/static/
+### VS Code ###
+.vscode/
