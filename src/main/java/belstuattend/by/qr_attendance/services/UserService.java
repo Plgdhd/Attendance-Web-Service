@@ -36,6 +36,7 @@ public class UserService {
     }
 
     public UserDTO getCurrentUser(){
+        //TODO добавить исключения
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User currentUser = userRepository.findByLogin(userDetails.getUsername()).get();
         UserDTO userDTO = modelMapper.map(currentUser, UserDTO.class);
