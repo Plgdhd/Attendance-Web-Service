@@ -39,11 +39,11 @@ public class QrController {
     @PostMapping("/generate")
     public ResponseEntity<?> qrGeneration(@RequestBody QrGenerationDTO qrGenerationDTO){
         try{
-            if(!disciplineService.existsByName(qrGenerationDTO.discipline())){
+            if(!disciplineService.existsByName(qrGenerationDTO.getDiscipline())){
                 return ResponseEntity.badRequest().body("Дисциплина с таким именем не найдена");
             }
 
-            BufferedImage icon = qrGeneratorService.generateUniqueQrCode(qrGenerationDTO.discipline());
+            BufferedImage icon = qrGeneratorService.generateUniqueQrCode(qrGenerationDTO.getDiscipline());
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(icon, "png", byteArrayOutputStream);
             byte[] byteIcon = byteArrayOutputStream.toByteArray();
@@ -60,10 +60,10 @@ public class QrController {
     @GetMapping("/verify")
     public ResponseEntity<?> verifyQrCode(@RequestBody RecordDTO recordDTO){
 
-        String currentCode = disciplineService.getCurrentCodeForDiscipline(recordDTO.discipline());
-        if(!recordDTO.code().equals(currentCode)){
+        String currentCode = disciplineService.getCurrentCodeForDiscipline(recordDTO.getDiscipline());
+        if(!recordDTO.getCode().equals(currentCode)){
             return ResponseEntity.badRequest().body("Код недействителен");
         }
-        return ResponseEntity.ok().body("Текущий код для " + recordDTO.discipline() + " : " + recordDTO.code());
+        return ResponseEntity.ok().body("Текущий код для " + recordDTO.getDiscipline() + " : " + recordDTO.getCode());
     }
 }

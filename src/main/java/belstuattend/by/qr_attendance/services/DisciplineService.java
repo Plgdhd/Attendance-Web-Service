@@ -61,14 +61,14 @@ public class DisciplineService {
 
     public DisciplineDTO update(DisciplineDTO disciplineDTO){
 
-        Optional<Discipline> discipline = disciplineRepository.findByName(disciplineDTO.name());
+        Optional<Discipline> discipline = disciplineRepository.findByName(disciplineDTO.getName());
 
         if(discipline.isEmpty()){
             throw new DisciplineNotFoundException("Дисциплина с таким именем не найдена");
         }
 
-        discipline.get().setName(disciplineDTO.name());
-        discipline.get().setDescription(disciplineDTO.description());
+        discipline.get().setName(disciplineDTO.getName());
+        discipline.get().setDescription(disciplineDTO.getDescription());
 
         return modelMapper.map(disciplineRepository.save(discipline.get()), DisciplineDTO.class);
 

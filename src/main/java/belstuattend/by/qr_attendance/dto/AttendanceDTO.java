@@ -1,3 +1,12 @@
 package belstuattend.by.qr_attendance.dto;
 
-public record AttendanceDTO(String message) {} 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor 
+@AllArgsConstructor
+public class AttendanceDTO {
+    private String message;
+}

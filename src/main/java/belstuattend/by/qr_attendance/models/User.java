@@ -18,12 +18,13 @@ public class User {
     private String password;
     private String fullName;
     private String email;
+
+    private int course;
+    private int group;
     
     private String role;
     // Формат предмет : массив дат?
     // Подумать над заменой на LocalDateTime
     private Map<String, List<String>> attendances;
 
-    // private String group;
-    // private String course;
 }

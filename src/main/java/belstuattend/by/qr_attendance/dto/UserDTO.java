@@ -1,6 +1,18 @@
 package belstuattend.by.qr_attendance.dto;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import java.util.List;
 import java.util.Map;
 
-public record UserDTO (String login, String fullName, String role,  String email, Map<String, List<String>> attendances){}
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserDTO {
+    private String login;
+    private String fullName;
+    private String role;
+    private String email;
+    private Map<String, List<String>> attendances;
+}

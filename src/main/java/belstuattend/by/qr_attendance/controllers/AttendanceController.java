@@ -49,7 +49,7 @@ public class AttendanceController {
     @PostMapping("/record")
     public ResponseEntity<?> recordAttendance(@RequestBody RecordDTO recordDTO){
 
-        if(recordDTO.discipline() != null && recordDTO.code() != null){
+        if(recordDTO.getDiscipline() != null && recordDTO.getCode() != null){
             return ResponseEntity.badRequest().body("Отсутствует код или название дисциплины!");
         }
 

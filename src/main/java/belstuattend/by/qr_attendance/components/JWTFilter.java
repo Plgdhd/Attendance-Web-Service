@@ -20,13 +20,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class JWTFilter extends OncePerRequestFilter{
+public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
     @Autowired
-    public JWTFilter(JWTUtil jwtUtil, UserDetailsServiceImpl userDetailsServiceImpl){
+    public JWTFilter(JWTUtil jwtUtil, UserDetailsServiceImpl userDetailsServiceImpl) {
         this.jwtUtil = jwtUtil;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
     }
@@ -34,36 +34,36 @@ public class JWTFilter extends OncePerRequestFilter{
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        
+
         String authHeader = request.getHeader("Authorization");
 
-        if(authHeader != null && !authHeader.isBlank() && authHeader.startsWith("Bearer")){
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
 
-            if(jwt.isBlank()){
+            if (jwt.isBlank()) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Неверный JWT токен!");
+                return;
             }
-            else{
-                try{
-                    String username = jwtUtil.validateTokenAndRetrieveClaim(jwt);
-                    UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
 
-                    UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails.getPassword(), userDetails.getAuthorities());
-                    
-                    if(SecurityContextHolder.getContext().getAuthentication() == null){
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
-                    }
+            try {
+                String username = jwtUtil.validateTokenAndRetrieveClaim(jwt);
+                UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
 
+                if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
+                            null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
-                catch(JWTVerificationException e){
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-                }
+
+            } catch (JWTVerificationException e) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT токен невалиден!");
+                return;
             }
-            
-            filterChain.doFilter(request, response);
         }
+
+        // Всегда вызываем filterChain, чтобы запрос продолжился
+        filterChain.doFilter(request, response);
+
     }
-    
 
 }

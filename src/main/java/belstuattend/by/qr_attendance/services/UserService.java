@@ -24,11 +24,11 @@ public class UserService {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper,
-                        RedisTemplate<String, Object> redisTemplate){
+                        RedisTemplate<String, String> redisTemplate){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
@@ -53,6 +53,7 @@ public class UserService {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setCourse(2);
         user.setRole("ROLE_USER");
 
         return modelMapper.map(userRepository.save(user), UserDTO.class);

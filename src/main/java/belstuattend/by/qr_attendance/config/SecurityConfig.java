@@ -25,21 +25,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import belstuattend.by.qr_attendance.components.JWTFilter;
 import belstuattend.by.qr_attendance.security.JWTUtil;
 import belstuattend.by.qr_attendance.security.UserDetailsServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final JWTFilter jwtFilter;
-    private final Logger logger;
 
     @Autowired
-    public SecurityConfig(UserDetailsServiceImpl userDetailsServiceImpl, JWTFilter jwtFilter,
-                            Logger logger){
+    public SecurityConfig(UserDetailsServiceImpl userDetailsServiceImpl, JWTFilter jwtFilter){
         this.userDetailsServiceImpl = userDetailsServiceImpl;
         this.jwtFilter = jwtFilter;
-        this.logger = logger;
     }
 
     @Bean
@@ -65,17 +64,18 @@ public class SecurityConfig {
         @SuppressWarnings("deprecation")
         @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        logger.info("Configuring security filter chain");
+        log.info("Configuring security filter chain");
 
             http
                     .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                     .csrf(csrf -> csrf.disable())
                     .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .authorizeRequests(authorize -> {
-                        logger.info("Configuring authorization rules");
+                        log.info("Configuring authorization rules");
 
                         authorize
                                 // Публичные эндпоинты (без аутентификации)
+                                .requestMatchers("/error").permitAll()
                                 .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/create-admin").permitAll()
                                 // Эндпоинты, требующие аутентификации и определенной роли
                                 .requestMatchers("/api/auth/user/info").authenticated()
@@ -92,12 +92,13 @@ public class SecurityConfig {
                                 .requestMatchers("/api/disciplines/add").hasRole("ADMIN")
                                 .requestMatchers("/api/disciplines/update/**").hasRole("ADMIN")
                                 .requestMatchers("/api/disciplines/delete/**").hasRole("ADMIN")
+                                .requestMatchers("/api/utils/getExcel").hasRole("ADMIN")
                                 // По умолчанию требуется аутентификация
                                 .anyRequest().authenticated();
                     })
                     .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-        logger.info("Security filter chain configured successfully");
+        log.info("Security filter chain configured successfully");
         return http.build();
     }
 

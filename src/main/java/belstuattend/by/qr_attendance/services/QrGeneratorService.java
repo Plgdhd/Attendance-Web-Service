@@ -31,10 +31,10 @@ public class QrGeneratorService {
 
     private static final int QR_CODE_SIZE = 500;
     private static final Random random = new Random();
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Autowired
-    public QrGeneratorService(RedisTemplate<String, Object> redisTemplate){
+    public QrGeneratorService(RedisTemplate<String, String> redisTemplate){
         this.redisTemplate = redisTemplate;
     }
 

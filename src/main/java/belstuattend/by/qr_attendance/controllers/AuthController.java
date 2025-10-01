@@ -25,20 +25,21 @@ import belstuattend.by.qr_attendance.models.User;
 import belstuattend.by.qr_attendance.security.JWTUtil;
 import belstuattend.by.qr_attendance.services.UserService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    
+
     private final JWTUtil jwtUtil;
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
-    
 
     @Autowired
     public AuthController(JWTUtil jwtUtil, ModelMapper modelMapper, UserService userService,
-                         AuthenticationManager authenticationManager){
+            AuthenticationManager authenticationManager) {
         this.jwtUtil = jwtUtil;
         this.modelMapper = modelMapper;
         this.userService = userService;
@@ -46,35 +47,41 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserDTO userDTO){
+    public ResponseEntity<?> register(@RequestBody AuthentificationDTO dto) {
+        try {
+            log.info("Register request: {}", dto);
 
-        User user = modelMapper.map(userDTO, User.class);
+            User user = modelMapper.map(dto, User.class);
+            log.info("Mapped user: {}", user);
 
-        userService.registerUser(user);
-        String token = jwtUtil.generateToken(user.getLogin());
-        RegistrationDTO registrationDTO = new RegistrationDTO(token);
-        return ResponseEntity.ok().body(registrationDTO);
+            userService.registerUser(user);
+            String token = jwtUtil.generateToken(user.getLogin());
+            return ResponseEntity.ok(new RegistrationDTO(token));
+        } catch (Exception e) {
+            log.error("Registration failed", e);
+            return ResponseEntity.status(500).body("Registration error: " + e.getMessage());
+        }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> performLogin(@RequestBody AuthentificationDTO authentificationDTO){
-        UsernamePasswordAuthenticationToken  authInputToken = 
-            new UsernamePasswordAuthenticationToken(authentificationDTO.login() ,
-                 authentificationDTO.password());
-        
-        try{
+    public ResponseEntity<?> performLogin(@RequestBody AuthentificationDTO authentificationDTO) {
+        UsernamePasswordAuthenticationToken authInputToken = new UsernamePasswordAuthenticationToken(
+                authentificationDTO.getLogin(),
+                authentificationDTO.getPassword());
+
+        try {
             authenticationManager.authenticate(authInputToken);
-        } catch(BadCredentialsException e){
+        } catch (BadCredentialsException e) {
             throw new BadCredentialsException(e.getMessage());
         }
 
-        String token = jwtUtil.generateToken(authentificationDTO.login());
+        String token = jwtUtil.generateToken(authentificationDTO.getLogin());
         RegistrationDTO registrationDTO = new RegistrationDTO(token);
         return ResponseEntity.ok().body(registrationDTO);
     }
 
     @GetMapping("/getCurrentSession")
-    public ResponseEntity<?> getCurrentUserSession(){
+    public ResponseEntity<?> getCurrentUserSession() {
         return ResponseEntity.ok().body(userService.getCurrentUser());
     }
 }

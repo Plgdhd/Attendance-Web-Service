@@ -1,5 +1,6 @@
 package belstuattend.by.qr_attendance.controllers;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,6 +10,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 
 import belstuattend.by.qr_attendance.exceptions.DisciplineAlreadyExistsException;
 import belstuattend.by.qr_attendance.exceptions.DisciplineNotFoundException;
+import belstuattend.by.qr_attendance.exceptions.ExcelBuilderException;
 import belstuattend.by.qr_attendance.exceptions.QrCodeGenerationException;
 import belstuattend.by.qr_attendance.exceptions.RecordException;
 import belstuattend.by.qr_attendance.exceptions.UserNotFoundException;
@@ -58,4 +60,8 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body("Проблемо: " + e.getMessage());
     }
 
+    @ExceptionHandler(ExcelBuilderException.class)
+    public ResponseEntity<String> handleExcelBuilderException(ExcelBuilderException e){
+        return ResponseEntity.badRequest().body("Проблемо: " + e.getMessage());
+    }
 }

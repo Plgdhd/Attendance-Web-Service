@@ -51,11 +51,11 @@ public class DisciplineController {
     @PostMapping("/add")
     public ResponseEntity<?> createDiscipline(@RequestBody DisciplineDTO disciplineDTO){
         
-        if(disciplineDTO.name().isEmpty() || disciplineDTO.name() == null){
+        if(disciplineDTO.getName().isEmpty() || disciplineDTO.getName() == null){
             return ResponseEntity.badRequest().body("Имя дисциплины отсутствует или не может быть пустым");
         }
 
-        if(disciplineService.findByName(disciplineDTO.name()) != null){
+        if(disciplineService.findByName(disciplineDTO.getName()) != null){
             return ResponseEntity.badRequest().body("Дисциплина с таким именем не найдена");
         }
 
@@ -66,7 +66,7 @@ public class DisciplineController {
     @PostMapping("/update")
     public ResponseEntity<?> updateDiscipline(@RequestBody DisciplineDTO disciplineDTO){
         
-        if(disciplineDTO.name() == null || disciplineDTO.name().isEmpty()){
+        if(disciplineDTO.getName() == null || disciplineDTO.getName().isEmpty()){
             return ResponseEntity.badRequest().body("Название дисциплины не указано или не может быть пустым");
         }
 

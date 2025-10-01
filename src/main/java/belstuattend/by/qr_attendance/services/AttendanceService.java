@@ -38,8 +38,8 @@ public class AttendanceService {
 
     public Boolean recordUser(RecordDTO recordDTO) {
 
-        String currentCode = disciplineService.getCurrentCodeForDiscipline(recordDTO.discipline());
-        if (!recordDTO.code().equals(currentCode)) {
+        String currentCode = disciplineService.getCurrentCodeForDiscipline(recordDTO.getDiscipline());
+        if (!recordDTO.getCode().equals(currentCode)) {
             throw new WrongCodeException("Код недействителен");
         }
 
@@ -62,7 +62,7 @@ public class AttendanceService {
         }
 
         List<String> disciplineAttendances = userAttendances
-                .computeIfAbsent(recordDTO.discipline(), k -> new ArrayList<>());
+                .computeIfAbsent(recordDTO.getDiscipline(), k -> new ArrayList<>());
         disciplineAttendances.add(dateTime);
 
         userService.save(user);
